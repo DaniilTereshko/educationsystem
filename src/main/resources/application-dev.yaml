@@ -1,0 +1,23 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: educationsystem
+  datasource:
+    url: jdbc:postgresql://localhost:5432/db
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: none
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.xml
+    enabled: true
+security:
+  jwt:
+    secret: ZndhZndhZ2VocmhyYWhyYWVsO21tZmw7ZmV3bG1rYW07a2xmO2xrbWtsO21tO2xrYXYnXV1xRkFzZmtdRkE8fWYsXXdbYWZGPA0KRlcsbTtkdnNlZmc
+    access-duration: 15m
+    refresh-duration: 1d

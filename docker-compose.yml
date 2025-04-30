@@ -1,0 +1,52 @@
+services:
+
+  db:
+    image: 'postgres:15.1-alpine'
+    restart: always
+    depends_on:
+      - pgadmin
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USERNAME}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - ./db-data:/var/lib/postgresql/data
+    networks:
+      - educationsystem
+
+  pgadmin:
+    build: pgadmin
+    restart: always
+    image: educationsystem_pgadmin:1.0.0
+    ports:
+      - "81:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+    networks:
+      - educationsystem
+
+  swagger-ui:
+    image: swaggerapi/swagger-ui
+    environment:
+      URLS: ${SWAGGER_URLS}
+      BASE_URL: /swagger
+    expose:
+      - "8080"
+    networks:
+      - educationsystem
+
+  proxy:
+    build: proxy
+    ports:
+      - "80:80"
+    networks:
+      - educationsystem
+
+volumes:
+  db-data:
+
+networks:
+  educationsystem:
+    name: educationsystem
+    driver: bridge

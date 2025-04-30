@@ -1,0 +1,53 @@
+services:
+
+  sensor-db:
+    image: 'postgres:15.1-alpine'
+    restart: always
+    ports:
+      - "5432:5432"
+    depends_on:
+      - pgadmin
+    environment:
+      POSTGRES_DB: ${POSTGRES_SENSOR_DB}
+      POSTGRES_USER: ${POSTGRES_SENSOR_USERNAME}
+      POSTGRES_PASSWORD: ${POSTGRES_SENSOR_PASSWORD}
+    volumes:
+      - ./db-data/sensor-service:/var/lib/postgresql/data
+    networks:
+      - monitor-sensors
+
+  user-db:
+    image: 'postgres:15.1-alpine'
+    restart: always
+    ports:
+      - "5433:5432"
+    depends_on:
+      - pgadmin
+    environment:
+      POSTGRES_DB: ${POSTGRES_USER_DB}
+      POSTGRES_USER: ${POSTGRES_USER_USERNAME}
+      POSTGRES_PASSWORD: ${POSTGRES_USER_PASSWORD}
+    volumes:
+      - ./db-data/user-service:/var/lib/postgresql/data
+    networks:
+      - monitor-sensors
+
+  pgadmin:
+    build: pgadmin
+    restart: always
+    image: monitor-sensors_pgadmin:1.0.0
+    ports:
+      - "81:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+    networks:
+      - monitor-sensors
+
+volumes:
+  db-data:
+
+networks:
+  monitor-sensors:
+    name: monitor-sensors
+    driver: bridge
