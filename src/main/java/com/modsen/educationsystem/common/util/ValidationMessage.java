@@ -16,6 +16,12 @@ public final class ValidationMessage {
 
     /* LoginRequest */
     public static final String LOGIN_USERNAME_EMPTY = "validation.login.username.empty";
-    public static final String LOGIN_PASSWORD_EMPTY = "validation.login.password.empty";
+    public static final String LOGIN_PASSWORD_EMPTY = "validation.login.password.empty"; /* LoginRequest */
+
+    /* CourseRequest */
+    public static final String COURSE_TITLE_EMPTY = "validation.course.title.empty";
+    public static final String COURSE_DESCRIPTION_EMPTY = "validation.course.description.empty";
+    public static final String COURSE_DESCRIPTION_INCORRECT_LENGTH = "validation.course.description.incorrect_length";
+    public static final String COURSE_TITLE_INCORRECT_LENGTH = "validation.course.title.incorrect_length";
 
 }

@@ -1,12 +1,10 @@
 package com.modsen.educationsystem.web.controller;
 
 import com.modsen.educationsystem.service.AuthService;
-import com.modsen.educationsystem.web.dto.UserDto;
 import com.modsen.educationsystem.web.mapper.UserMapper;
 import com.modsen.educationsystem.web.request.LoginRequest;
 import com.modsen.educationsystem.web.request.RegistrationRequest;
 import com.modsen.educationsystem.web.response.LoginResponse;
-import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -16,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;

@@ -8,8 +8,8 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 @EnableConfigurationProperties
 public class EducationSystemApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(EducationSystemApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(EducationSystemApplication.class, args);
+    }
 
 }

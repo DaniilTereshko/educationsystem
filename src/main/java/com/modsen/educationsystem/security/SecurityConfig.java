@@ -25,6 +25,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class SecurityConfig implements WebMvcConfigurer {
 
     public static final String AUTH_API_URI = "/api/v*/auth/**";
+    public static final String COURSE_API_URI = "/api/v*/courses/**";
     public static final String OPEN_API_URI = "/swagger-ui/**";
     public static final String DOC_PATH_URI = "/v3/api-docs/**";
     private final JwtFilter jwtFilter;
@@ -57,6 +58,7 @@ public class SecurityConfig implements WebMvcConfigurer {
                 )
                 .authorizeHttpRequests(configure -> configure.requestMatchers(AUTH_API_URI, OPEN_API_URI, DOC_PATH_URI)
                         .permitAll()
+                        .requestMatchers(COURSE_API_URI).hasAuthority("MANAGER")
                         .anyRequest()
                         .authenticated())
                 .anonymous(AnonymousConfigurer::disable)

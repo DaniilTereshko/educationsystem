@@ -1,5 +1,6 @@
 package com.modsen.educationsystem.service.impl;
 
+import com.modsen.educationsystem.model.Course;
 import com.modsen.educationsystem.model.User;
 import com.modsen.educationsystem.repository.UserRepository;
 import com.modsen.educationsystem.service.UserService;
@@ -7,8 +8,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 import static com.modsen.educationsystem.common.exception.ResourceNotFoundException.resourceNotFoundException;
 import static com.modsen.educationsystem.common.util.ExceptionMessage.RESOURCE_NOT_FOUND_BY_ATTRIBUTE;
+import static com.modsen.educationsystem.common.util.ExceptionMessage.RESOURCE_NOT_FOUND_BY_ID;
 
 @Service
 @Transactional
@@ -35,4 +39,10 @@ public class UserServiceImpl implements UserService {
         repository.save(user);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public User getOrThrow(final UUID id) {
+        return repository.findById(id)
+                .orElseThrow(resourceNotFoundException(RESOURCE_NOT_FOUND_BY_ID, id));
+    }
 }
