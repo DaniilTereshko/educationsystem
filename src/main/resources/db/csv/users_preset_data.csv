@@ -1,0 +1,3 @@
+id,email,username,password,role
+16146b4d-30e3-4ccf-b9a7-10cd82f1645a,user@gmail.com,user,$2a$10$pSNsCIpDIM5mvAAgAXoMr.27vlT0xiGAJqeYUeke/KMDDWY9PVHJ2,USER
+d2e04094-88d8-4f89-84ca-9cad4007009f,manager@gmail.com,manager,$2a$10$4MgUzmerun.t8SoxpIZz4ubSIaIcauBDh2hlBzQWtiKVBY6e0itgW,MANAGER

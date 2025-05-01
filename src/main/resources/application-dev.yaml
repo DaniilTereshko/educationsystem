@@ -5,7 +5,7 @@ spring:
   application:
     name: educationsystem
   datasource:
-    url: jdbc:postgresql://localhost:5432/db
+    url: jdbc:postgresql://localhost:5432/edu
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver

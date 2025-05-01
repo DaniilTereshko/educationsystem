@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="create-user-answer-table" author="tdi">
+
+        <createTable tableName="user_answer">
+            <column name="result_id" type="bigint">
+                <constraints nullable="false" foreignKeyName="fk_user_answer_result" references="test_result(id)"/>
+            </column>
+            <column name="question_id" type="bigint">
+                <constraints nullable="false" foreignKeyName="fk_user_answer_question" references="question(id)"/>
+            </column>
+            <column name="user_answer" type="text"/>
+            <column name="is_correct" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addPrimaryKey tableName="user_answer" columnNames="result_id, question_id"/>
+
+    </changeSet>
+
+</databaseChangeLog>

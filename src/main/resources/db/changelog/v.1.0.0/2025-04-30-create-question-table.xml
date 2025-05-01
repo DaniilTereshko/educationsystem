@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="create-question-table" author="tdi">
+
+        <createTable tableName="question">
+            <column name="id" type="bigserial" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="test_id" type="bigint">
+                <constraints nullable="false" foreignKeyName="fk_question_test" references="test(id)"/>
+            </column>
+            <column name="question_text" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="question_type" type="varchar(60)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="points" type="integer">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+    </changeSet>
+
+</databaseChangeLog>
