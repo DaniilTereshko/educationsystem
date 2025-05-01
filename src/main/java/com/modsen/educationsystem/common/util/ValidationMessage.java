@@ -24,4 +24,21 @@ public final class ValidationMessage {
     public static final String COURSE_DESCRIPTION_INCORRECT_LENGTH = "validation.course.description.incorrect_length";
     public static final String COURSE_TITLE_INCORRECT_LENGTH = "validation.course.title.incorrect_length";
 
+    /* TestRequest */
+    public static final String TEST_TITLE_EMPTY = "validation.test.title.empty";
+    public static final String TEST_TITLE_INCORRECT_LENGTH = "validation.test.title.incorrect_length";
+    public static final String TEST_TIME_LIMIT_NEGATIVE = "validation.test.time_limit.negative";
+    public static final String TEST_PASSING_SCORE_NEGATIVE = "validation.test.passing_score.negative";
+
+    /* QuestionRequest */
+    public static final String QUESTION_TEXT_EMPTY = "validation.question.text.empty";
+    public static final String QUESTION_TYPE_EMPTY = "validation.question.type.empty";
+    public static final String QUESTION_POINTS_INVALID = "validation.question.points.invalid";
+    public static final String QUESTION_ANSWERS_EMPTY = "validation.question.answers.empty";
+    public static final String QUESTION_ANSWERS_LIMIT = "validation.question.answers.max_size";
+
+    /* AnswerRequest */
+    public static final String ANSWER_TEXT_EMPTY = "validation.answer.text.empty";
+    public static final String ANSWER_CORRECTNESS_EMPTY = "validation.answer.correctness.empty";
+
 }

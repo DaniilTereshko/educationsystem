@@ -94,7 +94,9 @@ public class CourseServiceImpl implements CourseService {
         userCourseRepository.save(userCourse);
     }
 
-    private Course getOrThrow(final Long id) {
+    @Override
+    @Transactional(readOnly = true)
+    public Course getOrThrow(final Long id) {
         return courseRepository.findById(id)
                 .orElseThrow(resourceNotFoundException(RESOURCE_NOT_FOUND_BY_ID, id));
     }

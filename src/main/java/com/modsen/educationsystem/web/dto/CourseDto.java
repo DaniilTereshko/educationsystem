@@ -11,10 +11,15 @@ import java.time.LocalDateTime;
 @Schema(description = "Курс")
 public class CourseDto {
 
+    @Schema(description = "Уникальный идентификатор курса")
     private Long id;
+    @Schema(description = "Название курса")
     private String title;
+    @Schema(description = "Подробное описание курса")
     private String description;
+    @Schema(description = "Информация о создателе курса")
     private UserDto createdBy;
+    @Schema(description = "Дата и время создания курса")
     private LocalDateTime createdAt;
 
 }

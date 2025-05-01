@@ -14,6 +14,14 @@ public final class ExceptionMessage {
     public static final String RESOURCE_NOT_FOUND_BY_ID = "resource.not_found_by_id";
     public static final String INVALID_REQUEST_PAGE_EMPTY_EXCEPTION = "invalid.request.page.empty";
     public static final String INVALID_REQUEST_SIZE_VALUE_EXCEPTION = "invalid.request.size.size_value";
+
+    public static final String QUESTION_TEXT_ANSWER_REQUIREMENTS = "question.text.answer_requirements";
+    public static final String QUESTION_TEXT_ANSWER_MIN_ELEMENTS_REQUIREMENTS = "question.text.answer_requirements.min_elements";
+    public static final String QUESTION_SINGLE_CHOICE_REQUIREMENTS = "question.single.choice.requirements";
+    public static final String QUESTION_SINGLE_CHOICE_MIN_ELEMENTS_REQUIREMENTS = "question.single.choice.requirements.min_elements";
+    public static final String QUESTION_MULTIPLE_CHOICE_REQUIREMENTS = "question.multiple.choice.requirements";
+    public static final String QUESTION_MULTIPLE_CHOICE_MIN_ELEMENTS_REQUIREMENTS = "question.multiple.choice.requirements.min_elements";
+
     public static final String SERVER_INTERNAL_ERROR = "error.server.internal";
     public static final String REQUEST_NOT_READABLE = "error.request.not_readable";
 
