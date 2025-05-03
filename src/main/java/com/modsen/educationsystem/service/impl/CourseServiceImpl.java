@@ -1,10 +1,12 @@
 package com.modsen.educationsystem.service.impl;
 
+import com.modsen.educationsystem.common.exception.InvalidRequestException;
 import com.modsen.educationsystem.model.Course;
 import com.modsen.educationsystem.model.UserCourse;
 import com.modsen.educationsystem.model.id.UserCourseId;
 import com.modsen.educationsystem.repository.CourseRepository;
 import com.modsen.educationsystem.repository.UserCourseRepository;
+import com.modsen.educationsystem.security.service.UserHolder;
 import com.modsen.educationsystem.service.CourseService;
 import com.modsen.educationsystem.service.UserService;
 import com.modsen.educationsystem.service.ValidationService;
@@ -22,6 +24,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static com.modsen.educationsystem.common.exception.ResourceNotFoundException.resourceNotFoundException;
+import static com.modsen.educationsystem.common.util.ExceptionMessage.RESOURCE_ALREADY_EXISTS;
 import static com.modsen.educationsystem.common.util.ExceptionMessage.RESOURCE_NOT_FOUND_BY_ID;
 
 @Service
@@ -33,6 +36,7 @@ public class CourseServiceImpl implements CourseService {
     private final ValidationService validationService;
     private final UserService userService;
     private final CourseRepository courseRepository;
+    private final UserHolder userHolder;
     private final UserCourseRepository userCourseRepository;
 
     @Override
@@ -81,6 +85,9 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public void assign(final Long courseId, final UUID userId) {
+        if (userCourseRepository.existsById(UserCourseId.of(userId, courseId))) {
+            throw new InvalidRequestException(RESOURCE_ALREADY_EXISTS);
+        }
         var course = getOrThrow(courseId);
         var user = userService.getOrThrow(userId);
 
@@ -99,5 +106,13 @@ public class CourseServiceImpl implements CourseService {
     public Course getOrThrow(final Long id) {
         return courseRepository.findById(id)
                 .orElseThrow(resourceNotFoundException(RESOURCE_NOT_FOUND_BY_ID, id));
+    }
+
+    @Override
+    public PageDto<CourseDto> getUserCourses(int page, int size) {
+        var userId = userHolder.getUser().getId();
+        var map = userCourseRepository.findCoursesByUserId(userId, PageRequest.of(page, size))
+                .map(courseMapper::toDto);
+        return new PageDto<>(map);
     }
 }

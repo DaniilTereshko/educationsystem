@@ -9,9 +9,12 @@
     <include file="2025-04-30-create-course-table.xml" relativeToChangelogFile="true"/>
     <include file="2025-04-30-create-user-course-table.xml" relativeToChangelogFile="true"/>
     <include file="2025-04-30-create-test-table.xml" relativeToChangelogFile="true"/>
+    <include file="2025-05-02-create-test-attempt-table.xml" relativeToChangelogFile="true"/>
     <include file="2025-04-30-create-test-result-table.xml" relativeToChangelogFile="true"/>
     <include file="2025-04-30-create-question-table.xml" relativeToChangelogFile="true"/>
     <include file="2025-04-30-create-answer-table.xml" relativeToChangelogFile="true"/>
     <include file="2025-04-30-create-user-answer-table.xml" relativeToChangelogFile="true"/>
+    <include file="2025-05-02-add-test-table-columns.xml" relativeToChangelogFile="true"/>
+    <include file="2025-05-02-create-user-answer-selected-table.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

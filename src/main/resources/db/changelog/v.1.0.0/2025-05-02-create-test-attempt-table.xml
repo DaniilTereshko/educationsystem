@@ -5,28 +5,24 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
 
-    <changeSet id="create-test-result-table" author="tdi">
+    <changeSet id="create-test-attempt-table" author="tdi">
 
-        <createTable tableName="test_result">
+        <createTable tableName="test_attempt">
+
             <column name="id" type="bigserial" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
             <column name="user_id" type="uuid">
-                <constraints nullable="false" foreignKeyName="fk_test_result_user" references="users(id)"/>
+                <constraints nullable="false" foreignKeyName="fk_test_attempt_users" references="users(id)"/>
             </column>
             <column name="test_id" type="bigint">
-                <constraints nullable="false" foreignKeyName="fk_test_result_test" references="test(id)"/>
+                <constraints nullable="false" foreignKeyName="fk_test_attempt_test" references="test(id)"/>
             </column>
-            <column name="test_attempt_id" type="bigint">
-                <constraints foreignKeyName="fk_test_result_test_attempt" references="test_attempt(id)"/>
-            </column>
-            <column name="score" type="integer">
+            <column name="started_at" type="timestamp">
                 <constraints nullable="false"/>
             </column>
-            <column name="completed_at" type="timestamp">
-                <constraints nullable="false"/>
-            </column>
-            <column name="time_spent_seconds" type="integer">
+            <column name="finished_at" type="timestamp"/>
+            <column name="status" type="varchar(50)">
                 <constraints nullable="false"/>
             </column>
         </createTable>

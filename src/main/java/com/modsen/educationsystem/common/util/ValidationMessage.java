@@ -41,4 +41,8 @@ public final class ValidationMessage {
     public static final String ANSWER_TEXT_EMPTY = "validation.answer.text.empty";
     public static final String ANSWER_CORRECTNESS_EMPTY = "validation.answer.correctness.empty";
 
+    /* UserAnswerRequest */
+    public static final String QUESTION_ID_EMPTY = "validation.question.id.empty";
+    public static final String ANSWERS_EMPTY = "validation.answers.empty";
+    public static final String TIME_SPENT_INVALID = "validation.time.spent.invalid";
 }

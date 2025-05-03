@@ -1,7 +1,6 @@
 package com.modsen.educationsystem.service;
 
 import com.modsen.educationsystem.model.Course;
-import com.modsen.educationsystem.model.User;
 import com.modsen.educationsystem.web.dto.CourseDto;
 import com.modsen.educationsystem.web.dto.PageDto;
 import com.modsen.educationsystem.web.request.CourseRequest;
@@ -21,4 +20,6 @@ public interface CourseService {
     void assign(Long courseId, UUID userId);
 
     Course getOrThrow(final Long id);
+
+    PageDto<CourseDto> getUserCourses(int page, int size);
 }

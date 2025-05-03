@@ -25,4 +25,9 @@ public final class ExceptionMessage {
     public static final String SERVER_INTERNAL_ERROR = "error.server.internal";
     public static final String REQUEST_NOT_READABLE = "error.request.not_readable";
 
+    public static final String NO_MORE_ATTEMPTS = "attempts.exhausted";
+    public static final String ACTIVE_ATTEMPT_EXISTS = "attempt.active.exists";
+    public static final String ACTIVE_ATTEMPT_NOT_EXISTS = "attempt.active.not_exists";
+    public static final String TIME_LIMIT_EXCEEDED = "attempt.time.limit.exceeded";
+
 }

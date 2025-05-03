@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -38,6 +39,9 @@ public class AuthServiceImpl implements AuthService {
         if (userService.existsByUsername(user.getUsername())) {
             throw new ResourceAlreadyExistsException(RESOURCE_ALREADY_EXISTS);
         }
+        if (userService.existsByEmail(user.getEmail())) {
+            throw new ResourceAlreadyExistsException(RESOURCE_ALREADY_EXISTS);
+        }
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRole(User.Role.USER);
@@ -48,19 +52,20 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public LoginResponse login(LoginRequest request) {
         final var username = request.getUsername();
-
+        Authentication authenticate;
         try {
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+            authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
                     username,
                     request.getPassword()
             ));
         } catch (AuthenticationException ex) {
             throw new UnauthorizedAccessException(INVALID_CREDENTIALS);
         }
+        var user = userService.getByUsername(username);
 
         return LoginResponse.builder()
-                .access(jwtService.generateToken(username, JwtType.ACCESS))
-                .refresh(jwtService.generateToken(username, JwtType.REFRESH))
+                .access(jwtService.generateToken(username, JwtType.ACCESS, user.getEmail(), user.getRole()))
+                .refresh(jwtService.generateToken(username, JwtType.REFRESH, user.getEmail(), user.getRole()))
                 .build();
     }
 
@@ -76,14 +81,15 @@ public class AuthServiceImpl implements AuthService {
 
         final var username = jwtService.getSubject(jwt);
         userService.existsByUsername(username);
+        var user = userService.getByUsername(username);
 
         if (!jwtService.isValid(jwt, JwtType.REFRESH)) {
             throw new UnauthorizedAccessException(INVALID_REFRESH_TOKEN);
         }
 
         return LoginResponse.builder()
-                .access(jwtService.generateToken(username, JwtType.ACCESS))
-                .refresh(jwtService.generateToken(username, JwtType.REFRESH))
+                .access(jwtService.generateToken(username, JwtType.ACCESS, user.getEmail(), user.getRole()))
+                .refresh(jwtService.generateToken(username, JwtType.REFRESH, user.getEmail(), user.getRole()))
                 .build();
     }
 

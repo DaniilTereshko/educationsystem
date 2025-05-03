@@ -1,5 +1,6 @@
 package com.modsen.educationsystem.security.service;
 
+import com.modsen.educationsystem.model.User;
 import com.modsen.educationsystem.security.jwt.JwtProperties;
 import com.modsen.educationsystem.security.jwt.JwtType;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -20,6 +21,8 @@ import static org.apache.commons.lang3.StringUtils.startsWith;
 public class JwtService {
 
     private static final String TOKEN_TYPE_KEY = "type";
+    private static final String ROLE_KEY = "role";
+    private static final String EMAIL_KEY = "email";
     private final JwtProperties jwtProperties;
     private SecretKey secretKey;
 
@@ -46,10 +49,13 @@ public class JwtService {
         }
     }
 
-    public String generateToken(final String username, final JwtType jwtType) {
+    public String generateToken(
+            final String username, final JwtType jwtType,
+            final String email, final User.Role role
+    ) {
         return switch (jwtType) {
-            case ACCESS -> generateToken(username, jwtType, jwtProperties.getAccessDuration());
-            case REFRESH -> generateToken(username, jwtType, jwtProperties.getRefreshDuration());
+            case ACCESS -> generateToken(username, jwtType, jwtProperties.getAccessDuration(), email, role);
+            case REFRESH -> generateToken(username, jwtType, jwtProperties.getRefreshDuration(), email, role);
         };
     }
 
@@ -76,13 +82,21 @@ public class JwtService {
                 .get(TOKEN_TYPE_KEY, String.class);
     }
 
-    private String generateToken(final String username, final JwtType jwtType, final Duration duration) {
+    private String generateToken(
+            final String username,
+            final JwtType jwtType,
+            final Duration duration,
+            final String email,
+            final User.Role role
+            ) {
         var issuedAt = new Date();
         return Jwts.builder()
                 .subject(username)
                 .claim(TOKEN_TYPE_KEY, jwtType.name())
+                .claim(ROLE_KEY, role.name())
+                .claim(EMAIL_KEY, email)
                 .issuedAt(issuedAt)
-                .expiration(new Date(issuedAt.getTime() + duration.getSeconds() * 1000))
+                .expiration(new Date(issuedAt.getTime() + duration.toMillis()))
                 .signWith(Keys.hmacShaKeyFor(jwtProperties.getSecret().getBytes()))
                 .compact();
     }

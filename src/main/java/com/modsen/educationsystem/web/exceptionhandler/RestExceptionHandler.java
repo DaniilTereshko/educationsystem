@@ -1,6 +1,7 @@
 package com.modsen.educationsystem.web.exceptionhandler;
 
 import com.modsen.educationsystem.common.exception.InvalidRequestException;
+import com.modsen.educationsystem.common.exception.ResourceAlreadyExistsException;
 import com.modsen.educationsystem.common.exception.ResourceNotFoundException;
 import com.modsen.educationsystem.common.util.ExceptionMessage;
 import com.modsen.educationsystem.web.error.ErrorCode;
@@ -14,11 +15,13 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import java.nio.file.AccessDeniedException;
 import java.util.Locale;
 
 @RestControllerAdvice
@@ -51,6 +54,18 @@ public class RestExceptionHandler {
 
         var errorResponse = ValidationErrorResponse.of(ErrorCode.VALIDATION_ERROR.name(), fieldErrors);
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ResourceAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponse> handleResourceAlreadyExistsException(ResourceAlreadyExistsException ex){
+        var message = getLocalizedMessage(ex.getLocalizedMessage(), ex.getArgs());
+        var response = ErrorResponse.of(ErrorCode.USER_ERROR.name(), message);
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleAuthorizationDeniedException(AuthorizationDeniedException ex){
+        return new ResponseEntity<>(HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)

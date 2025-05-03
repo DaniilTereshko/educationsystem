@@ -25,6 +25,8 @@ public class Test {
     @Column(nullable = false)
     private String title;
 
+    private Integer maxAttempts;
+
     private Integer timeLimitMinutes;
 
     private Integer passingScore;
@@ -36,4 +38,6 @@ public class Test {
     @OneToMany(mappedBy = "test")
     private List<Question> questions;
 
+    @OneToMany(mappedBy = "test")
+    private List<TestAttempt> attempts;
 }

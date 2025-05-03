@@ -1,5 +1,7 @@
 package com.modsen.educationsystem.web.controller;
 
+import com.modsen.educationsystem.security.service.UserHolder;
+import com.modsen.educationsystem.service.AuthValidationService;
 import com.modsen.educationsystem.service.CourseService;
 import com.modsen.educationsystem.web.dto.CourseDto;
 import com.modsen.educationsystem.web.dto.PageDto;
@@ -12,6 +14,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,12 +36,14 @@ public class CourseController {
 
     private final CourseService courseService;
     private final CourseMapper courseMapper;
+    private final AuthValidationService authValidationService;
 
     @Operation(
             summary = "Получение списка всех курсов",
             description = "Получить список всех курсов с пагинацией"
     )
     @GetMapping
+    @PreAuthorize("isAuthenticated()")
     @SecurityRequirement(name = "JWT")
     public ResponseEntity<PageDto<CourseDto>> get(
             @Parameter(description = "Номер страницы (начиная с 0)", example = "0")
@@ -46,8 +51,11 @@ public class CourseController {
             @Parameter(description = "Количество элементов на странице", example = "10")
             @RequestParam(defaultValue = "10") final int size
     ) {
-        var result = courseService.get(page, size);
-        return ResponseEntity.ok(result);
+        if (authValidationService.isManager()) {
+            return ResponseEntity.ok(courseService.get(page, size));
+        } else {
+            return ResponseEntity.ok(courseService.getUserCourses(page, size));
+        }
     }
 
     @Operation(
@@ -55,6 +63,7 @@ public class CourseController {
             description = "Получить курс по идентификатору"
     )
     @GetMapping("/{id}")
+    @PreAuthorize("@authValidationService.isSubscribedToCourse(#id)")
     @SecurityRequirement(name = "JWT")
     public ResponseEntity<CourseDto> get(
             @Parameter(description = "Идентификатор", required = true)
@@ -70,6 +79,7 @@ public class CourseController {
             description = "Создать курс"
     )
     @PostMapping
+    @PreAuthorize("hasAuthority('MANAGER')")
     @ResponseStatus(HttpStatus.CREATED)
     @SecurityRequirement(name = "JWT")
     public ResponseEntity<CourseDto> create(@RequestBody final CourseRequest request) {
@@ -84,6 +94,7 @@ public class CourseController {
             description = "Обновить курс"
     )
     @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('MANAGER')")
     @SecurityRequirement(name = "JWT")
     public ResponseEntity<CourseDto> update(
             @Parameter(description = "Идентификатор", required = true)
@@ -100,6 +111,7 @@ public class CourseController {
             description = "Удалить курс"
     )
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('MANAGER')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @SecurityRequirement(name = "JWT")
     public ResponseEntity<?> delete(
@@ -115,6 +127,7 @@ public class CourseController {
             summary = "Назначение курса пользователю",
             description = "Назначить курс пользователю"
     )
+    @PreAuthorize("hasAuthority('MANAGER')")
     @PostMapping("/{courseId}/assign/{userId}")
     @SecurityRequirement(name = "JWT")
     public void assign(

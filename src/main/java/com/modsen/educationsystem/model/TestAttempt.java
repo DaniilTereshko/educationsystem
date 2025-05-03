@@ -2,22 +2,22 @@ package com.modsen.educationsystem.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
+@Entity
 @Getter
 @Setter
-@Entity
-public class TestResult {
+public class TestAttempt {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,20 +31,15 @@ public class TestResult {
     @JoinColumn(name = "test_id", nullable = false)
     private Test test;
 
-    @ManyToOne
-    @JoinColumn(name = "test_attempt_id", nullable = false)
-    private TestAttempt testAttempt;
-
     @Column(nullable = false)
-    private Integer score = 0;
+    private LocalDateTime startedAt;
 
-    @Column(nullable = false)
-    private LocalDateTime completedAt;
+    private LocalDateTime finishedAt;
 
-    @Column(nullable = false)
-    private Integer timeSpentSeconds = 0;
+    @Enumerated(EnumType.STRING)
+    private AttemptStatus status;
 
-    @OneToMany(mappedBy = "result")
-    private List<UserAnswer> userAnswers;
-
+    public enum AttemptStatus {
+        IN_PROGRESS, COMPLETED, TIMED_OUT
+    }
 }

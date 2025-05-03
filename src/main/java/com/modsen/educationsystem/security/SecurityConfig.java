@@ -17,7 +17,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -25,9 +28,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class SecurityConfig implements WebMvcConfigurer {
 
     public static final String AUTH_API_URI = "/api/v*/auth/**";
-    public static final String COURSE_API_URI = "/api/v*/courses/**";
-    public static final String QUESTION_API_URI = "/api/v*/questions/**";
-    public static final String TEST_API_URI = "/api/v*/tests/**";
     public static final String OPEN_API_URI = "/swagger-ui/**";
     public static final String DOC_PATH_URI = "/v3/api-docs/**";
     private final JwtFilter jwtFilter;
@@ -45,7 +45,16 @@ public class SecurityConfig implements WebMvcConfigurer {
 
     @Bean
     public SecurityFilterChain securityFilterChain(final HttpSecurity http) throws Exception {
-        http.csrf(CsrfConfigurer::disable)
+        http
+                .cors(cors -> cors.configurationSource(request -> {
+                    CorsConfiguration config = new CorsConfiguration();
+                    config.setAllowedOrigins(List.of("http://localhost:3000"));
+                    config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+                    config.setAllowedHeaders(List.of("*"));
+                    config.setAllowCredentials(true);
+                    return config;
+                }))
+                .csrf(CsrfConfigurer::disable)
                 .sessionManagement(sessionManagement ->
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(configure -> configure.authenticationEntryPoint(
@@ -60,7 +69,6 @@ public class SecurityConfig implements WebMvcConfigurer {
                 )
                 .authorizeHttpRequests(configure -> configure.requestMatchers(AUTH_API_URI, OPEN_API_URI, DOC_PATH_URI)
                         .permitAll()
-                        .requestMatchers(COURSE_API_URI, TEST_API_URI, QUESTION_API_URI).hasAuthority("MANAGER")
                         .anyRequest()
                         .authenticated())
                 .anonymous(AnonymousConfigurer::disable)
