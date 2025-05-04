@@ -3,11 +3,11 @@ package com.modsen.educationsystem.web.exceptionhandler;
 import com.modsen.educationsystem.common.exception.InvalidRequestException;
 import com.modsen.educationsystem.common.exception.ResourceAlreadyExistsException;
 import com.modsen.educationsystem.common.exception.ResourceNotFoundException;
+import com.modsen.educationsystem.common.exception.UnauthorizedAccessException;
 import com.modsen.educationsystem.common.util.ExceptionMessage;
 import com.modsen.educationsystem.web.error.ErrorCode;
 import com.modsen.educationsystem.web.error.ErrorResponse;
 import com.modsen.educationsystem.web.error.FieldErrorResponse;
-import com.modsen.educationsystem.web.error.ValidationErrorResponse;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
@@ -21,8 +21,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-import java.nio.file.AccessDeniedException;
 import java.util.Locale;
+import java.util.List;
 
 @RestControllerAdvice
 @RequiredArgsConstructor
@@ -31,7 +31,7 @@ public class RestExceptionHandler {
     private final MessageSource messageSource;
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ValidationErrorResponse> handleValidationExceptions(MethodArgumentNotValidException ex, Locale locale) {
+    public ResponseEntity<ErrorResponse> handleValidationExceptions(MethodArgumentNotValidException ex, Locale locale) {
         var fieldErrors = ex.getBindingResult().getFieldErrors().stream()
                 .map(error -> new FieldErrorResponse(
                         error.getField(),
@@ -39,12 +39,12 @@ public class RestExceptionHandler {
                 ))
                 .toList();
 
-        var errorResponse = ValidationErrorResponse.of(ErrorCode.VALIDATION_ERROR.name(), fieldErrors);
+        var errorResponse = ErrorResponse.of(ErrorCode.VALIDATION_ERROR.name(), "Validation failed", fieldErrors);
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<ValidationErrorResponse> handleConstraintViolationException(ConstraintViolationException ex, Locale locale) {
+    public ResponseEntity<ErrorResponse> handleConstraintViolationException(ConstraintViolationException ex, Locale locale) {
         var fieldErrors = ex.getConstraintViolations().stream()
                 .map(violation -> new FieldErrorResponse(
                         violation.getPropertyPath().toString(),
@@ -52,7 +52,7 @@ public class RestExceptionHandler {
                 ))
                 .toList();
 
-        var errorResponse = ValidationErrorResponse.of(ErrorCode.VALIDATION_ERROR.name(), fieldErrors);
+        var errorResponse = ErrorResponse.of(ErrorCode.VALIDATION_ERROR.name(), "Validation failed", fieldErrors);
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
@@ -65,7 +65,14 @@ public class RestExceptionHandler {
 
     @ExceptionHandler(AuthorizationDeniedException.class)
     public ResponseEntity<ErrorResponse> handleAuthorizationDeniedException(AuthorizationDeniedException ex){
-        return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        var response = ErrorResponse.of(ErrorCode.USER_ERROR.name(), "Access denied");
+        return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(UnauthorizedAccessException.class)
+    public ResponseEntity<ErrorResponse> handleUnauthorizedAccessException(UnauthorizedAccessException ex){
+        var response = ErrorResponse.of(ErrorCode.USER_ERROR.name(), "Неверный логин или пароль");
+        return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)

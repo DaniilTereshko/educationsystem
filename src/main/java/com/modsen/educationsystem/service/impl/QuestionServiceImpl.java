@@ -13,6 +13,10 @@ import com.modsen.educationsystem.web.request.CreateQuestionRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Page;
+import com.modsen.educationsystem.web.dto.PageDto;
+import com.modsen.educationsystem.web.dto.QuestionDto;
 
 import java.util.List;
 
@@ -68,6 +72,15 @@ public class QuestionServiceImpl implements QuestionService {
     public List<Question> getQuestionsByTest(final Long testId) {
         testService.getOrThrow(testId);
         return questionRepository.findByTestId(testId);
+    }
+
+    @Override
+    public PageDto<QuestionDto> getQuestionsByTest(Long testId, int page, int size) {
+        validationService.validatePaginationParams(page, size);
+        testService.getOrThrow(testId);
+        var pageRequest = PageRequest.of(page, size);
+        Page<Question> pageResult = questionRepository.findAllByTestId(testId, pageRequest);
+        return new PageDto<>(pageResult.map(questionMapper::toDto));
     }
 
     private List<Answer> createAnswers(final CreateQuestionRequest request, final Question question) {

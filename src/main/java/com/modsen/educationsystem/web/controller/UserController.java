@@ -16,6 +16,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import com.modsen.educationsystem.web.error.ErrorResponse;
 
 @Tag(name = "Пользователи", description = "Контроллер для операций над пользователями")
 @RestController
@@ -30,6 +35,13 @@ public class UserController {
             summary = "Получение списка всех пользователей",
             description = "Получить список всех пользователей с пагинацией"
     )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Список пользователей получен"),
+        @ApiResponse(responseCode = "400", description = "Ошибка пользователя/валидации", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(responseCode = "401", description = "Пользователь не авторизован", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(responseCode = "403", description = "Нет доступа", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
     @GetMapping
     @PreAuthorize("hasAuthority('MANAGER')")
     @SecurityRequirement(name = "JWT")

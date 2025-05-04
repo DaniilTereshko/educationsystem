@@ -5,12 +5,18 @@ import com.modsen.educationsystem.service.TestService;
 import com.modsen.educationsystem.web.dto.PageDto;
 import com.modsen.educationsystem.web.dto.TestDto;
 import com.modsen.educationsystem.web.dto.TestResultDto;
+import com.modsen.educationsystem.web.dto.TestAttemptDto;
 import com.modsen.educationsystem.web.mapper.TestMapper;
 import com.modsen.educationsystem.web.mapper.TestResultMapper;
 import com.modsen.educationsystem.web.request.TestRequest;
 import com.modsen.educationsystem.web.request.TestSubmissionRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import com.modsen.educationsystem.web.error.ErrorResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -44,23 +50,41 @@ public class TestController {
 
     @Operation(
             summary = "Получение тестов курса",
-            description = "Получить список всех тестов для указанного курса"
+            description = "Получить список всех тестов для указанного курса с пагинацией"
     )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Тесты получены"),
+        @ApiResponse(responseCode = "400", description = "Ошибка пользователя/валидации", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(responseCode = "401", description = "Пользователь не авторизован", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(responseCode = "403", description = "Нет доступа", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
     @GetMapping("/course/{courseId}")
     @PreAuthorize("@authValidationService.isSubscribedToCourse(#courseId)")
     @SecurityRequirement(name = "JWT")
-    public ResponseEntity<List<TestDto>> getCourseTests(
+    public ResponseEntity<PageDto<TestDto>> getCourseTests(
             @Parameter(description = "Идентификатор курса", required = true)
-            @PathVariable final Long courseId) {
-        var test = testService.getTestsByCourse(courseId);
-        var dtos = testMapper.toDto(test);
-        return ResponseEntity.ok(dtos);
+            @PathVariable final Long courseId,
+            @Parameter(description = "Номер страницы (начиная с 0)", example = "0")
+            @RequestParam(defaultValue = "0") final int page,
+            @Parameter(description = "Количество элементов на странице", example = "10")
+            @RequestParam(defaultValue = "10") final int size
+    ) {
+        var pageDto = testService.getTestsByCourse(courseId, page, size);
+        return ResponseEntity.ok(pageDto);
     }
 
     @Operation(
             summary = "Создание теста для курса",
             description = "Создать новый тест для указанного курса"
     )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Тест создан"),
+        @ApiResponse(responseCode = "400", description = "Ошибка пользователя/валидации", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(responseCode = "401", description = "Пользователь не авторизован", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(responseCode = "403", description = "Нет доступа", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
     @PostMapping("/courses/{courseId}")
     @PreAuthorize("hasAuthority('MANAGER')")
     @ResponseStatus(HttpStatus.CREATED)
@@ -80,6 +104,13 @@ public class TestController {
             summary = "Обновление теста",
             description = "Обновить существующий тест"
     )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Тест обновлён"),
+        @ApiResponse(responseCode = "400", description = "Ошибка пользователя/валидации", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(responseCode = "401", description = "Пользователь не авторизован", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(responseCode = "403", description = "Нет доступа", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('MANAGER')")
     @SecurityRequirement(name = "JWT")
@@ -96,6 +127,13 @@ public class TestController {
             summary = "Удаление теста",
             description = "Удалить существующий тест"
     )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "204", description = "Тест удалён"),
+        @ApiResponse(responseCode = "400", description = "Ошибка пользователя/валидации", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(responseCode = "401", description = "Пользователь не авторизован", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(responseCode = "403", description = "Нет доступа", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('MANAGER')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -112,6 +150,13 @@ public class TestController {
             summary = "Начать попытку прохождения теста",
             description = "Пользователь начинает попытку прохождения"
     )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Попытка начата"),
+        @ApiResponse(responseCode = "400", description = "Ошибка пользователя/валидации", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(responseCode = "401", description = "Пользователь не авторизован", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(responseCode = "403", description = "Нет доступа", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
     @PostMapping("/{id}/start")
     @PreAuthorize("@authValidationService.isSubscribedToTest(#id)")
     @ResponseStatus(HttpStatus.CREATED)
@@ -128,6 +173,13 @@ public class TestController {
             summary = "Отправить результаты теста",
             description = "Пользователь отправляет свои ответы и завершает текущую активную попытку"
     )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Результаты отправлены"),
+        @ApiResponse(responseCode = "400", description = "Ошибка пользователя/валидации", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(responseCode = "401", description = "Пользователь не авторизован", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(responseCode = "403", description = "Нет доступа", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
     @PostMapping("/{id}/submit")
     @PreAuthorize("@authValidationService.isSubscribedToTest(#id)")
     @ResponseStatus(HttpStatus.CREATED)
@@ -147,6 +199,13 @@ public class TestController {
             summary = "Получить результаты теста пользователя",
             description = "Возвращает список всех результатов прохождения указанного теста по пользователю"
     )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Результаты получены"),
+        @ApiResponse(responseCode = "400", description = "Ошибка пользователя/валидации", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(responseCode = "401", description = "Пользователь не авторизован", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(responseCode = "403", description = "Нет доступа", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
     @PreAuthorize("@authValidationService.isSubscribedToTest(#id)")
     @GetMapping("/{id}/results")
     @SecurityRequirement(name = "JWT")
@@ -161,5 +220,29 @@ public class TestController {
         var results = testService.getTestResults(id, PageRequest.of(page, size));
         return ResponseEntity.ok()
                 .body(new PageDto<>(results));
+    }
+
+    @Operation(
+            summary = "Получить активную попытку пользователя по тесту",
+            description = "Возвращает попытку пользователя для теста в статусе IN_PROGRESS"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Активная попытка получена", content = @Content(schema = @Schema(implementation = TestAttemptDto.class))),
+        @ApiResponse(responseCode = "404", description = "Нет активной попытки", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(responseCode = "401", description = "Пользователь не авторизован", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(responseCode = "403", description = "Нет доступа", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    @GetMapping("/{id}/in-progress-attempt")
+    @PreAuthorize("@authValidationService.isSubscribedToTest(#id)")
+    @SecurityRequirement(name = "JWT")
+    public ResponseEntity<?> getInProgressAttempt(
+            @Parameter(description = "Идентификатор теста", required = true)
+            @PathVariable final Long id
+    ) {
+        var attempt = testService.getInProgressAttempt(id);
+        if (attempt == null) {
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.ok(attempt);
     }
 }

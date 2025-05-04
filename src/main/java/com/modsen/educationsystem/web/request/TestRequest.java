@@ -4,6 +4,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -41,5 +43,14 @@ public class TestRequest {
             requiredMode = Schema.RequiredMode.NOT_REQUIRED
     )
     private Integer passingScore;
+
+    @Min(value = 1, message = "Максимум попыток должен быть не менее 1")
+    @Max(value = 100, message = "Максимум попыток не может превышать 100")
+    @Schema(
+            description = "Максимальное количество попыток на тест",
+            example = "3",
+            requiredMode = Schema.RequiredMode.NOT_REQUIRED
+    )
+    private Integer maxAttempts;
 
 }

@@ -20,4 +20,7 @@ public class TestDto {
 
     @Schema(description = "Проходной балл")
     private Integer passingScore;
+
+    @Schema(description = "Максимальное количество попыток на тест")
+    private Integer maxAttempts;
 }

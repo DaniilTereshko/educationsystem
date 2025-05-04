@@ -29,5 +29,6 @@ public final class ExceptionMessage {
     public static final String ACTIVE_ATTEMPT_EXISTS = "attempt.active.exists";
     public static final String ACTIVE_ATTEMPT_NOT_EXISTS = "attempt.active.not_exists";
     public static final String TIME_LIMIT_EXCEEDED = "attempt.time.limit.exceeded";
+    public static final String COURSE_ALREADY_ASSIGNED = "course.already.assigned";
 
 }

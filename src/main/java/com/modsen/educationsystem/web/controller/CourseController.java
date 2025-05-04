@@ -11,6 +11,11 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import com.modsen.educationsystem.web.error.ErrorResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -42,6 +47,13 @@ public class CourseController {
             summary = "Получение списка всех курсов",
             description = "Получить список всех курсов с пагинацией"
     )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Список курсов получен"),
+        @ApiResponse(responseCode = "400", description = "Ошибка пользователя/валидации", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(responseCode = "401", description = "Пользователь не авторизован", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(responseCode = "403", description = "Нет доступа", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
     @GetMapping
     @PreAuthorize("isAuthenticated()")
     @SecurityRequirement(name = "JWT")
@@ -62,6 +74,13 @@ public class CourseController {
             summary = "Получение курса по идентификатору",
             description = "Получить курс по идентификатору"
     )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Курс получен"),
+        @ApiResponse(responseCode = "400", description = "Ошибка пользователя/валидации", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(responseCode = "401", description = "Пользователь не авторизован", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(responseCode = "403", description = "Нет доступа", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
     @GetMapping("/{id}")
     @PreAuthorize("@authValidationService.isSubscribedToCourse(#id)")
     @SecurityRequirement(name = "JWT")
@@ -78,6 +97,13 @@ public class CourseController {
             summary = "Создать курс",
             description = "Создать курс"
     )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Курс создан"),
+        @ApiResponse(responseCode = "400", description = "Ошибка пользователя/валидации", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(responseCode = "401", description = "Пользователь не авторизован", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(responseCode = "403", description = "Нет доступа", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
     @PostMapping
     @PreAuthorize("hasAuthority('MANAGER')")
     @ResponseStatus(HttpStatus.CREATED)
@@ -93,6 +119,13 @@ public class CourseController {
             summary = "Обновить курс",
             description = "Обновить курс"
     )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Курс обновлён"),
+        @ApiResponse(responseCode = "400", description = "Ошибка пользователя/валидации", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(responseCode = "401", description = "Пользователь не авторизован", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(responseCode = "403", description = "Нет доступа", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('MANAGER')")
     @SecurityRequirement(name = "JWT")
@@ -110,6 +143,13 @@ public class CourseController {
             summary = "Удалить курс",
             description = "Удалить курс"
     )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "204", description = "Курс удалён"),
+        @ApiResponse(responseCode = "400", description = "Ошибка пользователя/валидации", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(responseCode = "401", description = "Пользователь не авторизован", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(responseCode = "403", description = "Нет доступа", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('MANAGER')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -127,6 +167,13 @@ public class CourseController {
             summary = "Назначение курса пользователю",
             description = "Назначить курс пользователю"
     )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Курс назначен"),
+        @ApiResponse(responseCode = "400", description = "Ошибка пользователя/валидации", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(responseCode = "401", description = "Пользователь не авторизован", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(responseCode = "403", description = "Нет доступа", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(responseCode = "500", description = "Внутренняя ошибка сервера", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
     @PreAuthorize("hasAuthority('MANAGER')")
     @PostMapping("/{courseId}/assign/{userId}")
     @SecurityRequirement(name = "JWT")

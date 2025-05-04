@@ -6,6 +6,9 @@ import com.modsen.educationsystem.model.TestResult;
 import com.modsen.educationsystem.web.dto.TestResultDto;
 import com.modsen.educationsystem.web.request.TestRequest;
 import com.modsen.educationsystem.web.request.TestSubmissionRequest;
+import com.modsen.educationsystem.web.dto.PageDto;
+import com.modsen.educationsystem.web.dto.TestDto;
+import com.modsen.educationsystem.web.dto.TestAttemptDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
@@ -18,8 +21,6 @@ public interface TestService {
 
     void delete(Long id);
 
-    List<Test> getTestsByCourse(Long courseId);
-
     Test getOrThrow(Long id);
 
     TestAttempt start(Long id);
@@ -27,4 +28,8 @@ public interface TestService {
     TestResult submit(Long id, TestSubmissionRequest request);
 
     Page<TestResultDto> getTestResults(Long id, PageRequest of);
+
+    PageDto<TestDto> getTestsByCourse(Long courseId, int page, int size);
+
+    TestAttemptDto getInProgressAttempt(Long testId);
 }

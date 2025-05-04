@@ -24,6 +24,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static com.modsen.educationsystem.common.exception.ResourceNotFoundException.resourceNotFoundException;
+import static com.modsen.educationsystem.common.util.ExceptionMessage.COURSE_ALREADY_ASSIGNED;
 import static com.modsen.educationsystem.common.util.ExceptionMessage.RESOURCE_ALREADY_EXISTS;
 import static com.modsen.educationsystem.common.util.ExceptionMessage.RESOURCE_NOT_FOUND_BY_ID;
 
@@ -86,7 +87,7 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public void assign(final Long courseId, final UUID userId) {
         if (userCourseRepository.existsById(UserCourseId.of(userId, courseId))) {
-            throw new InvalidRequestException(RESOURCE_ALREADY_EXISTS);
+            throw new InvalidRequestException(COURSE_ALREADY_ASSIGNED);
         }
         var course = getOrThrow(courseId);
         var user = userService.getOrThrow(userId);

@@ -14,8 +14,12 @@ import com.modsen.educationsystem.service.TestScoreCalculator;
 import com.modsen.educationsystem.service.TestService;
 import com.modsen.educationsystem.service.UserService;
 import com.modsen.educationsystem.service.ValidationService;
+import com.modsen.educationsystem.web.dto.PageDto;
+import com.modsen.educationsystem.web.dto.TestDto;
 import com.modsen.educationsystem.web.dto.TestResultDto;
+import com.modsen.educationsystem.web.dto.TestAttemptDto;
 import com.modsen.educationsystem.web.mapper.TestResultMapper;
+import com.modsen.educationsystem.web.mapper.TestMapper;
 import com.modsen.educationsystem.web.request.TestRequest;
 import com.modsen.educationsystem.web.request.TestSubmissionRequest;
 import lombok.RequiredArgsConstructor;
@@ -48,6 +52,7 @@ public class TestServiceImpl implements TestService {
     private final TestResultRepository testResultRepository;
     private final TestScoreCalculator testScoreCalculator;
     private final TestResultMapper testResultMapper;
+    private final TestMapper testMapper;
 
     @Override
     public Test create(final Long courseId, final TestRequest request) {
@@ -57,6 +62,7 @@ public class TestServiceImpl implements TestService {
         test.setTitle(request.getTitle());
         test.setTimeLimitMinutes(request.getTimeLimitMinutes());
         test.setPassingScore(request.getPassingScore());
+        test.setMaxAttempts(request.getMaxAttempts());
         test.setCourse(course);
 
         return testRepository.save(test);
@@ -69,6 +75,7 @@ public class TestServiceImpl implements TestService {
         test.setTitle(request.getTitle());
         test.setTimeLimitMinutes(request.getTimeLimitMinutes());
         test.setPassingScore(request.getPassingScore());
+        test.setMaxAttempts(request.getMaxAttempts());
 
         return testRepository.save(test);
     }
@@ -77,13 +84,6 @@ public class TestServiceImpl implements TestService {
     public void delete(final Long id) {
         var course = getOrThrow(id);
         testRepository.delete(course);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<Test> getTestsByCourse(final Long courseId) {
-        courseService.getOrThrow(courseId);
-        return testRepository.findByCourseId(courseId);
     }
 
     @Override
@@ -135,6 +135,26 @@ public class TestServiceImpl implements TestService {
     public Page<TestResultDto> getTestResults(Long id, PageRequest of) {
         return testResultRepository.findByTestIdAndUserId(id, userHolder.getUser().getId(), of)
                 .map(testResultMapper::toDto);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public PageDto<TestDto> getTestsByCourse(Long courseId, int page, int size) {
+        validationService.validatePaginationParams(page, size);
+        courseService.getOrThrow(courseId);
+        var pageRequest = PageRequest.of(page, size);
+        var pageResult = testRepository.findAllByCourseId(courseId, pageRequest)
+            .map(testMapper::toDto);
+        return new PageDto<>(pageResult);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public TestAttemptDto getInProgressAttempt(Long testId) {
+        var userId = userHolder.getUser().getId();
+        var attemptOpt = testAttemptRepository.findByTestIdAndUserIdAndStatus(
+            testId, userId, TestAttempt.AttemptStatus.IN_PROGRESS);
+        return attemptOpt.map(testMapper::toDto).orElse(null);
     }
 
     private TestAttempt completeActiveAttempt(TestAttempt activeAttempt) {
