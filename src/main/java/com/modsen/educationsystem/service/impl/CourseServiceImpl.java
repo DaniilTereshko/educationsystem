@@ -62,7 +62,7 @@ public class CourseServiceImpl implements CourseService {
         validationService.validatePaginationParams(page, size);
         var pageRequest = PageRequest.of(page, size);
 
-        Page<CourseDto> pageResult = courseRepository.findAll(pageRequest)
+        Page<CourseDto> pageResult = courseRepository.findAllByDeletedFalse(pageRequest)
                 .map(courseMapper::toDto);
 
         return new PageDto<>(pageResult);
@@ -71,7 +71,8 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public void delete(final Long id) {
         var course = getOrThrow(id);
-        courseRepository.delete(course);
+        course.setDeleted(true);
+        courseRepository.save(course);
     }
 
     @Override
@@ -105,7 +106,7 @@ public class CourseServiceImpl implements CourseService {
     @Override
     @Transactional(readOnly = true)
     public Course getOrThrow(final Long id) {
-        return courseRepository.findById(id)
+        return courseRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(resourceNotFoundException(RESOURCE_NOT_FOUND_BY_ID, id));
     }
 

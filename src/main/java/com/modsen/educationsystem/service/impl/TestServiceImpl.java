@@ -82,14 +82,15 @@ public class TestServiceImpl implements TestService {
 
     @Override
     public void delete(final Long id) {
-        var course = getOrThrow(id);
-        testRepository.delete(course);
+        var test = getOrThrow(id);
+        test.setDeleted(true);
+        testRepository.save(test);
     }
 
     @Override
     @Transactional(readOnly = true)
     public Test getOrThrow(final Long id) {
-        return testRepository.findById(id)
+        return testRepository.findByIdAndDeletedFalse(id)
                 .orElseThrow(resourceNotFoundException(RESOURCE_NOT_FOUND_BY_ID, id));
     }
 
@@ -143,7 +144,7 @@ public class TestServiceImpl implements TestService {
         validationService.validatePaginationParams(page, size);
         courseService.getOrThrow(courseId);
         var pageRequest = PageRequest.of(page, size);
-        var pageResult = testRepository.findAllByCourseId(courseId, pageRequest)
+        var pageResult = testRepository.findAllByCourseIdAndDeletedFalse(courseId, pageRequest)
             .map(testMapper::toDto);
         return new PageDto<>(pageResult);
     }

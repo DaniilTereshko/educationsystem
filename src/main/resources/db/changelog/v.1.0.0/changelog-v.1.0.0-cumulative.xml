@@ -16,5 +16,7 @@
     <include file="2025-04-30-create-user-answer-table.xml" relativeToChangelogFile="true"/>
     <include file="2025-05-02-add-test-table-columns.xml" relativeToChangelogFile="true"/>
     <include file="2025-05-02-create-user-answer-selected-table.xml" relativeToChangelogFile="true"/>
+    <include file="2025-06-01-add-test-deleted-column.xml" relativeToChangelogFile="true"/>
+    <include file="2025-06-01-add-course-deleted-column.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

@@ -40,4 +40,7 @@ public class Test {
 
     @OneToMany(mappedBy = "test")
     private List<TestAttempt> attempts;
+
+    @Column(name = "deleted", nullable = false)
+    private boolean deleted = false;
 }

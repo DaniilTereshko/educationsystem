@@ -46,4 +46,7 @@ public class Course {
     @OneToMany(mappedBy = "course")
     private List<Test> tests;
 
+    @Column(name = "deleted", nullable = false)
+    private boolean deleted = false;
+
 }
